@@ -1,0 +1,2 @@
+cls   очистка консолі
+ctrl + c - stop server

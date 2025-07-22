@@ -1,0 +1,72 @@
+---------------------------------------------------------------------------- Lesson 1
+https://youtu.be/cHVhpNrjcPs?list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk
+
+-----------------------------------------------------------------------------
+00 : 00 : 00
+
+
+
+---------------------------------------------------------------------------- Lesson  2
+
+https://youtu.be/ugfE0ttbstQ?list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk
+
+----------------------------------------------------------------------------
+00 : 08 : 55
+
+--------------------------------------------------------------------------- Lesson 3
+https://youtu.be/qRR-E3czK_o?list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk
+
+type fetches
+GET
+POST
+DELETE
+UPDATE
+
+HTTPS://  
+
+
+
+---------------------------------------------------------------------------
+00 : 00 : 00
+
+
+
+------------------------------------------------------------------------------- Lesson 4
+https://youtu.be/2yBAPuTywRA?list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk
+
+server
+
+request - information from brauser - client
+response
+
+JSON
+
+JS
+node.js
+nest
+
+
+
+
+
+-------------------------------------------------------------------------------
+00 : 00 : 00
+
+
+-------------------------------------------------------------------------------------- Lesson 5
+https://youtu.be/hyPIB1MKYoA?list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk
+
+node.js
+запуск файла
+node server.js
+
+http server -
+
+http response -> nomber port 3003
+
+localhost: 3003
+
+
+
+--------------------------------------------------------------------------------------
+00 : 16 : 58
