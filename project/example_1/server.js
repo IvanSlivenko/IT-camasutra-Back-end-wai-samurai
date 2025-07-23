@@ -1,43 +1,57 @@
-
-//Example 1
-// let counter = 0
-// console.log('counter',counter)
-// setInterval(()=>{console.log('counter',counter)},1000)
-
-// Example 2
-const http = require('http')
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 let requestsCount = 0;
 
-// Створюємо сервер
-const server = http.createServer((request, response)=>{
+const server = http.createServer((request, response) => {
 
-    requestsCount++
-
-    switch (request.url){
-        //localhost:3003/students
-        case '/students' :
-            response.write('Students')
-            break;
-        //localhost:3003/courses
-        case '/courses' :
-            response.write('Front + Back')
-            break;
-        case '/test' :
-            response.write('test')
-            break;
-        default :
-            response.write(' 404 Not found')
+    // Віддаємо іконку, якщо браузер просить її
+    if (request.url === '/favicon.ico') {
+        const iconPath = path.join(__dirname, '..', 'images', 'u-green.png');
+        fs.readFile(iconPath, (err, data) => {
+            if (err) {
+                response.writeHead(404);
+                response.end();
+                return;
+            }
+            response.writeHead(200, { 'Content-Type': 'image/x-icon' });
+            response.end(data);
+        });
+        return;
     }
 
-    //Запишемо в респонс
-    // response.write('UmanProger ' + requestsCount)
+    response.setHeader('Content-Type', 'text/plain; charset=utf-8'); // Додаємо заголовок
+    // console.log('Запит:', request.method, request.url);
 
-    // Завершити респонс
-    response.end()
-})
 
-//Прослуховуємо порт 3003
+    let message = '';
+
+    switch (request.url) {
+        case '/students':
+            message = 'Students';
+            break;
+        case '/':
+        case '/courses':
+            message = 'Front + Back';
+            break;
+        case '/test':
+            message = 'Test';
+            break;
+        default:
+            message = '404 Not Found';
+    }
+
+    if (request.url === '/favicon.ico' || request.url === '/.well-known/appspecific/com.chrome.devtools.json') {
+        response.statusCode = 204; // No Content
+        return response.end();
+    }
+    requestsCount++;
+    message += ` | UmanProger ${requestsCount}`;
+
+    response.end(message); // записуємо відповідь одним рядком
+});
+
 server.listen(3003, () => {
     console.log('Сервер запущено на http://localhost:3003');
 });

@@ -1,2 +1,14 @@
 cls   очистка консолі
 ctrl + c - stop server
+node server.js - запуск файла server.js
+
+
+shift + ! -> tab - створення базової html розмітки
+
+ctrl + D  дублювання рядка
+
+
+
+
+
+
