@@ -3,37 +3,48 @@ const fs = require('fs');
 const path = require('path');
 
 
+const delay = (ms) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve()
+        }, ms)
+    })
+}
 
-const server = http.createServer((request, response) => {
+const readFile = (path) => {
+    return new Promise((resolve, reject) => {
+        fs.readFile(path, 'utf-8', (err, data) => {
+            if (err) {
+                reject(err)
+            }
+            else {
+                resolve(data)
+            }
+        })
+    })
+
+
+}
+
+const server = http.createServer(async (request, response) => {
 
     // var 4
     switch (request.url) {
-        case '/home': {
-            // const data = fs.readFileSync('pages/home.html')
-            const data = fs.readFile('pages/home.html', (err, data)=>{
-                if(err){
-                    response.write(err)
-                }
-                else {
-                    response.write(data)
-                    response.end()
-                }
-            })
+        case '/home':
+            try {
+                const data = await readFile('pages/home.html')
+                response.write(data)
+                response.end()
+            } catch (err) {
+                response.write('something wrong')
+                response.end()
+            }
             break;
-        }
-        case '/about': {
-            setTimeout(()=>{
-                    const data = fs.readFile('pages/about.html',(err, data)=>{
-                    if(err){
-                        response.write('err')
-                    }
-                    else {
-                        response.write(data)
-                        response.end()
-                    }
-                })
 
-            },3000)
+        case '/about': {
+            await delay(3000)
+            response.write('About course')
+            response.end()
             break;
         }
 
