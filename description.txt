@@ -95,9 +95,18 @@ D - delete == DELETE
 http protocol -> method : get, post, patch, delete, put
 
 API :
-Base URL + Resourse + URI Parameter || Query Parameter(?Author=London&Year=2025) + method
+Base URL + Resourse + URI Parameter || Query Parameter(?Author=London&Year=2025&limit=100&sort=title) + method
+
+fetch('http://localhost:3003/api/users/322/books',{method: 'GET'}) - отримання
+
+fetch('http://localhost:3003/api/users/322/books',{method: 'POST', body: JSON.stringify({ title: 'JS - samurai way', author: 'Ivan'})}) - створення
+
+fetch('http://localhost:3003/api/users/322/books/32',{method: 'PUT', body: JSON.stringify({ title: 'JS - samurai way', author: 'Volodymyr'})}) - оновлення (зміни) потрібні всі параметри
+
+fetch('http://localhost:3003/api/users/322/books/32',{method: 'PATCH', body: JSON.stringify({ title: 'JS - samurai way', author: 'Volodymyr'})}) - оновлення (зміни) потрібні  тільки параметри що змінились
 
 
+JSON.stringify({}) - перетворення об'єкта у стрічку
 
 ---------------------------------------------------------------------------------------
 00 : 15 : 40

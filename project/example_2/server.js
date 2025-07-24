@@ -28,6 +28,21 @@ const readFile = (path) => {
 
 const server = http.createServer(async (request, response) => {
 
+if (request.url === '/api/users' && request.method === 'GET') {
+    const users = [
+      { id: 1, name: 'Ivan' },
+      { id: 2, name: 'Oksana' }
+    ];
+
+    request.setHeader('Content-Type', 'application/json');
+    request.setHeader('Access-Control-Allow-Origin', '*'); // <-- ось це важливо
+
+    res.end(JSON.stringify(users));
+  } else {
+    request.statusCode = 404;
+    request.end('Not Found');
+  }
+
     // var 4
     switch (request.url) {
         case '/home':
