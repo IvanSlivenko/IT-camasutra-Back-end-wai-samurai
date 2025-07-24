@@ -1,0 +1,10 @@
+{
+  "name": "lesse-03",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "UmanProger",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

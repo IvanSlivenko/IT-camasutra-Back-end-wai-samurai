@@ -7,6 +7,12 @@ shift + ! -> tab - створення базової html розмітки
 
 ctrl + D  дублювання рядка
 
+yarn -v - версія
+yarn -- init - Створення node проекту
+
+yarn add express
+
+
 
 
 
