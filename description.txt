@@ -80,3 +80,24 @@ promise ((resolve, reject)=>{
 })
 ---------------------------------------------------------------------------------------
 00 : 33 : 23
+
+
+--------------------------------------------------------------------------------------- Lesson 7
+
+https://youtu.be/v7zq1DntN_Y?list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk
+
+C - create == POST
+R - reade == GET
+U - update == PUT ||  PATCH
+D - delete == DELETE
+
+
+http protocol -> method : get, post, patch, delete, put
+
+API :
+Base URL + Resourse + URI Parameter || Query Parameter(?Author=London&Year=2025) + method
+
+
+
+---------------------------------------------------------------------------------------
+00 : 15 : 40
