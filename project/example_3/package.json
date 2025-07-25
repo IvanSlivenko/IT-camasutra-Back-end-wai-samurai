@@ -1,6 +1,7 @@
 {
   "name": "lesse-03",
   "version": "1.0.0",
+  "type": "module", 
   "main": "index.js",
   "author": "UmanProger",
   "license": "MIT",
@@ -13,5 +14,13 @@
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
-  }
+  },
+  "scripts": {
+  "watch":"tsc -w",
+  "dev": "nodemon",
+  "dev2":"nodemon .\\dist\\index.js"
 }
+
+
+}
+
