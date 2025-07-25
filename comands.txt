@@ -10,7 +10,28 @@ ctrl + D  дублювання рядка
 yarn -v - версія
 yarn -- init - Створення node проекту
 
+
 yarn add express
+
+
+yarn add nodemon -D
+
+
+
+yarn nodemon index.js   -  запуск файла через nodemon
+
+yarn nodemon --inspect  index.js  запуск файла через nodemon для інспектування
+
+
+dev toolse в новому вікні браузера
+sourse 
+
+f-10 -перехід між стрічками
+
+f - 8  завершення режиму дебага
+
+yarn add  typescript ts-node @types/express @types/node -D
+ 
 
 
 

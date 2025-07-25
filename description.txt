@@ -116,8 +116,21 @@ JSON.stringify({}) - перетворення об'єкта у стрічку
 https://youtu.be/DI_jSP2Jshg?list=PLcvhF2Wqh7DP4tZ851CauQ8GqgqlCocjk
 
 
-Express - 
+Express
+
+
+fetch('http://localhost:3000/samurais', { method: 'POST' })
+
+
+nodemon
+
+yarn add nodemon -D
+
+Запуск локально nodemon index.js
+
+yarn nodemon index.js
+
 ---------------------------------------------------------------------------------------
-00 : 11 : 15
+00 : 32 : 17
 
 
