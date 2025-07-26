@@ -1,14 +1,16 @@
 {
   "name": "lesse-03",
   "version": "1.0.0",
-  "type": "module", 
+  "type": "module",
   "main": "index.js",
   "author": "UmanProger",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.1.0",
     "nodemon": "^3.1.10",
@@ -16,11 +18,8 @@
     "typescript": "^5.8.3"
   },
   "scripts": {
-  "watch":"tsc -w",
-  "dev": "nodemon",
-  "dev2":"nodemon .\\dist\\index.js"
+    "watch": "tsc -w",
+    "dev": "nodemon",
+    "dev2": "nodemon .\\dist\\index.js"
+  }
 }
-
-
-}
-

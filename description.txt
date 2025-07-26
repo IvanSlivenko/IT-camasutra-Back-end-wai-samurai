@@ -142,7 +142,53 @@ fetch('http://localhost:3000',{method: 'GET'})
 .then(res => res.json())
 .then(json => console.log(json))
 
+///////////////////////////////////////////////////////////////////////////////
+import express from "express";
+const app = express();
+const port = 3000;
+
+app.get("/courses/:id", (req, res) => {
+  res.json([
+    { id: 1, title: "front-end" },
+    { id: 2, title: "back-end" },
+    { id: 3, title: "automation ga" },
+    { id: 4, title: "devops" }
+  ].find(c => c.id === +req.params.id));  // !!!!!!!!!!!!!!!!!!!!!!!!!!!
+});
+/////////////////////////////////////////////////////////////////////////////////
+
+yarn add -D @types/cors
+
+import express from "express";
+import cors from "cors";
+
+const app = express();
+app.use(cors());
+const port = 3000;
+
+
+відкриваємо в браузері файл
+---------------------------------------------- test.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Fetch</title>
+</head>
+<body>
+  <script>
+    fetch('http://localhost:3000/courses/2')
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .catch(err => console.error('Fetch error:', err));
+  </script>
+</body>
+</html>
+
+----------------------------------------------
+
 ---------------------------------------------------------------------------------------
-00 : 13 : 32
+00 : 20 : 05
 
 
