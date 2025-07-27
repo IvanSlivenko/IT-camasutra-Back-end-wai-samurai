@@ -7,16 +7,18 @@
 <body>
 
 <!-- Пошук всіх   -->
-  <script>
+  <!-- <script>
     fetch('http://localhost:3000/courses', {method : 'GET'})
       .then(res => res.json())
       .then(json => console.log(json))
       .catch(err => console.error('Fetch error:', err));
-  </script>
+  </script> -->
 
   <!-- Пошук одного   -->
+  
   <!-- <script>
-    fetch('http://localhost:3000/courses/3', {method : 'GET'})
+    let id = 1753644689634
+    fetch(`http://localhost:3000/courses/${id}`, {method : 'GET'})
       .then(res => res.json())
       .then(json => console.log(json))
       .catch(err => console.error('Fetch error:', err));
@@ -47,18 +49,103 @@
   </script> -->
 
       <!-- Створення з body   -->
-  <script>
+  <!-- <script>
   fetch('http://localhost:3000/courses', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ title: 'dba' })
+    body: JSON.stringify({ title: '' })
   })
-    .then(res => res.json())
+    // .then(res => res.json())
+    .then(res => {
+    console.log('Status:', res.status);
+    return res.json();
+  })
+    .then(res => {
+    console.log('Status:', res.status);
+    return res.json();
+  })
     .then(json => console.log(json))
     .catch(err => console.error('Fetch error:', err));
+  </script> -->
+
+ 
+
+ <!-- Створення з body    var 2-->
+ <!-- <script>
+  function sendCourse() {
+    let currentTitle = 'test 38'
+    if (currentTitle.trim() === '') {
+      throw new Error('Title is required (400)');
+    }
+
+
+    fetch('http://localhost:3000/courses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title: currentTitle })
+    })
+      .then(async res => {
+        // console.log('Status:', res.status);
+        const data = await res.json().catch(() => ({}));
+        if (res.status >= 400) {
+          console.warn('Server error response:', data);
+        } else {
+          console.log('Success:', data);
+        }
+      })
+      .catch(err => console.error('Fetch error:', err));
+  }
+
+  sendCourse(); // виклик функції
+</script> -->
+
+ <!-- Видалення одного   -->
+  <script>
+  const DeletedId = 1753644689634;
+
+  fetch(`http://localhost:3000/courses/${DeletedId}`)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Курс з id=${DeletedId} не знайдено`);
+      }
+      return res.json();
+    })
+    .then(json => {
+      // json — це знайдений курс
+      const foundId = json.id; // <-- Ось тут дістаємо ID
+      console.log('Знайдено курс:', json);
+      console.log('Його ID:', foundId);
+
+      return fetch(`http://localhost:3000/courses/${foundId}`, {
+        method: 'DELETE',
+      });
+    })
+    .then(res => {
+      if (res.status === 204) {
+        console.log('Курс успішно видалено.');
+      } else {
+        return res.text().then(text => {
+          console.warn('Невідповідь сервера:', text);
+        });
+      }
+    })
+    .catch(err => {
+      console.error('Помилка:', err.message);
+    });
 </script>
+
+
+<!-- Пошук всіх   -->
+  <!-- <script>
+    fetch('http://localhost:3000/courses', {method : 'GET'})
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .catch(err => console.error('Fetch error:', err));
+  </script> -->
 
 </body>
 </html>
