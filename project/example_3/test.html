@@ -5,11 +5,60 @@
   <title>Test Fetch</title>
 </head>
 <body>
+
+<!-- Пошук всіх   -->
   <script>
-    fetch('http://localhost:3000/courses/2')
+    fetch('http://localhost:3000/courses', {method : 'GET'})
       .then(res => res.json())
       .then(json => console.log(json))
       .catch(err => console.error('Fetch error:', err));
   </script>
+
+  <!-- Пошук одного   -->
+  <!-- <script>
+    fetch('http://localhost:3000/courses/3', {method : 'GET'})
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .catch(err => console.error('Fetch error:', err));
+  </script> -->
+
+  <!-- Пошук за фільтром   -->
+  <!-- <script>
+    fetch('http://localhost:3000/courses?title=back')
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .catch(err => console.error('Fetch error:', err));
+  </script> -->
+
+  <!-- Пошук за фільтром без данних умови   -->
+  <!-- <script>
+    fetch('http://localhost:3000/courses', {method : 'GET'})
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .catch(err => console.error('Fetch error:', err));
+  </script> -->
+
+    <!-- Створення за замовчуванням   -->
+  <!-- <script>
+    fetch('http://localhost:3000/courses', {method : 'POST'})
+      .then(res => res.json())
+      .then(json => console.log(json))
+      .catch(err => console.error('Fetch error:', err));
+  </script> -->
+
+      <!-- Створення з body   -->
+  <script>
+  fetch('http://localhost:3000/courses', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ title: 'dba' })
+  })
+    .then(res => res.json())
+    .then(json => console.log(json))
+    .catch(err => console.error('Fetch error:', err));
+</script>
+
 </body>
 </html>
