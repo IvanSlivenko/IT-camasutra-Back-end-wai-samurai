@@ -1,119 +1,118 @@
 import express from "express";
 import cors from "cors";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 app.use(cors());
 const port = 3000;
 
-const jsonBodyMiddleware = express.json();
-app.use(jsonBodyMiddleware);
+const jsonBodyMiddleware = express.json()
+app.use(jsonBodyMiddleware)
 
-let db = {
-  courses: [
-    { id: 1, title: "front-end" },
-    { id: 2, title: "back-end" },
-    { id: 3, title: "automation ga" },
-    { id: 4, title: "devops" },
-  ],
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const dbPath = path.resolve(__dirname, "../currentDb.json");
+
+interface Course {
+  id: number;
+  title: string;
+}
+
+// ✳️ Завантаження курсів із файлу
+const readDb = (): { courses: Course[] } => {
+  const data = fs.readFileSync(dbPath, "utf-8");
+  return JSON.parse(data);
 };
 
-// app.get('/', (req, res) => {
-//   // const a = 4;
-//   // if (a > 5) {
-//   //   res.send('ok')
-//   // }else{
-//   //   res.send('Hello World! a =< 5')
-//   // }
+// 💾 Збереження курсів у файл
+const writeDb = (data: { courses: Course[] }) => {
+  fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
+};
 
-//   // res.send({message: 'UmanProger'})
-// or
-//   // res.json(1000)
-// or
-//   // res.sendStatus(404)
+app.use(express.json());
 
-// })
-
-// app.get('/samurais', (req, res) => {
-//   res.send('Hello samurais Test')
-// })
-
-// app.post('/samurais', (req, res) => {
-//   res.send('We hav created samurai method POST !!')
-// })
-
-// app.get("/courses", (req, res) => {
-//   res.json(db.courses);
-// });
-
+// 🔍 Отримати всі курси (з фільтром за назвою)
 app.get("/courses", (req, res) => {
+  const db = readDb();
   let foundCourses = db.courses;
+
   if (req.query.title) {
-    foundCourses = foundCourses.filter(
-      (c) => c.title.indexOf(req.query.title as string) > -1
+    foundCourses = foundCourses.filter((c) =>
+      c.title.toLowerCase().includes((req.query.title as string).toLowerCase())
     );
   }
+
   res.json(foundCourses);
 });
 
+// 🔍 Отримати курс за ID
 app.get("/courses/:id", (req, res) => {
+  const db = readDb();
   const foundCourse = db.courses.find((c) => c.id === +req.params.id);
 
   if (!foundCourse) {
-    res.sendStatus(404);
-    return;
+    return res.sendStatus(404);
   }
 
   res.json(foundCourse);
 });
 
+// ➕ Створити новий курс
 app.post("/courses", (req, res) => {
   if (!req.body.title || req.body.title.trim() === "") {
-    res.status(400).json({ error: "Title is required" });
-    return;
+    return res.status(400).json({ error: "Title is required" });
   }
 
-  const createdCourse = {
+  const db = readDb();
+  const newCourse: Course = {
     id: +new Date(),
-    title: req.body.title,
+    title: req.body.title.trim(),
   };
-  db.courses.push(createdCourse);
-  // res.json(createdCourse)
-  res.status(201).json(createdCourse);
+
+  db.courses.push(newCourse);
+  writeDb(db);
+
+  res.status(201).json(newCourse);
 });
 
-
-//  delete var 1
-// app.delete("/courses/:id", (req, res) => {
-//   db.courses = db.courses.filter((c) => c.id !== +req.params.id);
-//   res.sendStatus(204);
-// });
-
-// delete var 2
-// app.delete("/courses/:id", (req, res) => {
-//   const initialLength = db.courses.length;
-//   db.courses = db.courses.filter((c) => c.id !== +req.params.id);
-
-//   if (db.courses.length === initialLength) {
-//     return res.status(404).json({ error: "Course not found" });
-//   }
-
-//   res.status(200).json({ message: "Deleted successfully" });
-// });
-
-// delete var 3
+// ❌ Видалити курс за ID
 app.delete("/courses/:id", (req, res) => {
   const id = +req.params.id;
-  const index = db.courses.findIndex((c) => c.id === id);
+  const db = readDb();
 
+  const index = db.courses.findIndex((c) => c.id === id);
   if (index === -1) {
     return res.status(404).json({ error: "Course not found" });
   }
 
-  const deleted = db.courses.splice(index, 1)[0]; // видаляємо 1 елемент
-  console.log("DELETED:", deleted);
-  res.status(204).send();
+  db.courses.splice(index, 1);
+  writeDb(db);
+
+  res.sendStatus(204);
+});
+
+// 🔍 Змінити курс за ID
+app.put("/courses/:id", (req, res) => {
+  if (!req.body.title || req.body.title.trim() === "") {
+    return res.status(400).json({ error: "Title is required" });
+  }
+
+  const db = readDb();
+  const foundCourse = db.courses.find((c) => c.id === +req.params.id);
+
+  if (!foundCourse) {
+    return res.sendStatus(404);
+  }
+
+  foundCourse.title = req.body.title;
+
+  writeDb(db); // <-- обовʼязково зберегти оновлення в файл
+
+  res.json(foundCourse);
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+  console.log(`✅ Server is running on http://localhost:${port}`);
 });
