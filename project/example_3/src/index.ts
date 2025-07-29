@@ -8,6 +8,16 @@ const app = express();
 app.use(cors());
 const port = 3000;
 
+const HTTP_STATUSES = {
+  OK_200: 200,
+  CREATED_201: 201,
+  NO_CONTENT_204: 204,
+
+  BAD_REQUEST_400: 400,
+  NOT_FOUND_404: 404
+
+}
+
 const jsonBodyMiddleware = express.json()
 app.use(jsonBodyMiddleware)
 
@@ -53,7 +63,7 @@ app.get("/courses/:id", (req, res) => {
   const foundCourse = db.courses.find((c) => c.id === +req.params.id);
 
   if (!foundCourse) {
-    return res.sendStatus(404);
+    return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
   }
 
   res.json(foundCourse);
@@ -62,7 +72,7 @@ app.get("/courses/:id", (req, res) => {
 // ➕ Створити новий курс
 app.post("/courses", (req, res) => {
   if (!req.body.title || req.body.title.trim() === "") {
-    return res.status(400).json({ error: "Title is required" });
+    return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ error: "Title is required" });
   }
 
   const db = readDb();
@@ -74,7 +84,7 @@ app.post("/courses", (req, res) => {
   db.courses.push(newCourse);
   writeDb(db);
 
-  res.status(201).json(newCourse);
+  res.status(HTTP_STATUSES.CREATED_201).json(newCourse); 
 });
 
 // ❌ Видалити курс за ID
@@ -84,33 +94,38 @@ app.delete("/courses/:id", (req, res) => {
 
   const index = db.courses.findIndex((c) => c.id === id);
   if (index === -1) {
-    return res.status(404).json({ error: "Course not found" });
+    return res.status(HTTP_STATUSES.NOT_FOUND_404).json({ error: "Course not found" });
   }
 
   db.courses.splice(index, 1);
   writeDb(db);
 
-  res.sendStatus(204);
+  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
 });
 
 // 🔍 Змінити курс за ID
 app.put("/courses/:id", (req, res) => {
   if (!req.body.title || req.body.title.trim() === "") {
-    return res.status(400).json({ error: "Title is required" });
+    return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ error: "Title is required" });
   }
 
   const db = readDb();
   const foundCourse = db.courses.find((c) => c.id === +req.params.id);
 
+  // if (!foundCourse) {
+  //   return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+  // }
+
   if (!foundCourse) {
-    return res.sendStatus(404);
+    return res.status(404).json({ error: "Course not found" });
   }
 
   foundCourse.title = req.body.title;
 
   writeDb(db); // <-- обовʼязково зберегти оновлення в файл
 
-  res.json(foundCourse);
+  // return  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204).json(foundCourse);
+  return  res.status(HTTP_STATUSES.OK_200).json(foundCourse);
 });
 
 app.listen(port, () => {
