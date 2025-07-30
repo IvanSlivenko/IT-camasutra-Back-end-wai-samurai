@@ -1,4 +1,4 @@
-import express, {Request, Response}  from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import fs from "fs";
 import path from "path";
@@ -16,12 +16,11 @@ const HTTP_STATUSES = {
   NO_CONTENT_204: 204,
 
   BAD_REQUEST_400: 400,
-  NOT_FOUND_404: 404
+  NOT_FOUND_404: 404,
+};
 
-}
-
-const jsonBodyMiddleware = express.json()
-app.use(jsonBodyMiddleware)
+const jsonBodyMiddleware = express.json();
+app.use(jsonBodyMiddleware);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,7 +52,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
-
 // 🔍 Отримати всі курси (з фільтром за назвою)
 app.get("/courses", (req, res) => {
   const db = readDb();
@@ -83,7 +81,9 @@ app.get("/courses/:id", (req, res) => {
 // ➕ Створити новий курс
 app.post("/courses", (req, res) => {
   if (!req.body.title || req.body.title.trim() === "") {
-    return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ error: "Title is required" });
+    return res
+      .status(HTTP_STATUSES.BAD_REQUEST_400)
+      .json({ error: "Title is required" });
   }
 
   const db = readDb();
@@ -95,7 +95,7 @@ app.post("/courses", (req, res) => {
   db.courses.push(newCourse);
   writeDb(db);
 
-  res.status(HTTP_STATUSES.CREATED_201).json(newCourse); 
+  res.status(HTTP_STATUSES.CREATED_201).json(newCourse);
 });
 
 // ❌ Видалити курс за ID
@@ -105,7 +105,9 @@ app.delete("/courses/:id", (req, res) => {
 
   const index = db.courses.findIndex((c) => c.id === id);
   if (index === -1) {
-    return res.status(HTTP_STATUSES.NOT_FOUND_404).json({ error: "Course not found" });
+    return res
+      .status(HTTP_STATUSES.NOT_FOUND_404)
+      .json({ error: "Course not found" });
   }
 
   db.courses.splice(index, 1);
@@ -117,7 +119,9 @@ app.delete("/courses/:id", (req, res) => {
 // 🔍 Змінити курс за ID
 app.put("/courses/:id", (req, res) => {
   if (!req.body.title || req.body.title.trim() === "") {
-    return res.status(HTTP_STATUSES.BAD_REQUEST_400).json({ error: "Title is required" });
+    return res
+      .status(HTTP_STATUSES.BAD_REQUEST_400)
+      .json({ error: "Title is required" });
   }
 
   const db = readDb();
@@ -136,13 +140,14 @@ app.put("/courses/:id", (req, res) => {
   writeDb(db); // <-- обовʼязково зберегти оновлення в файл
 
   // return  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204).json(foundCourse);
-  return  res.status(HTTP_STATUSES.OK_200).json(foundCourse);
+  return res.status(HTTP_STATUSES.OK_200).json(foundCourse);
 });
 
 //////////////////////////////////////////////////////////////////////////////////////
 const dbPathPoducts = path.resolve(__dirname, "../productsDB.json");
 
 interface Products {
+  id: number;
   title: string;
 }
 
@@ -153,26 +158,26 @@ const readDbProducts = (): { products: Products[] } => {
 };
 
 // 💾 Збереження Products у файл
-const writeDbProducts = (data: { products: Course[] }) => {
+const writeDbProducts = (data: { products: Products[] }) => {
   fs.writeFileSync(dbPathPoducts, JSON.stringify(data, null, 2));
 };
-
 
 // -------------------------------------------------------------------------
 const dbPathAdresses = path.resolve(__dirname, "../adressesDB.json");
 
 interface Adresses {
+  id: number;
   value: string;
 }
 
-// ✳️ Завантаження Products із файлу
-const readDbPAdresses = (): { adresses: Products[] } => {
+// ✳️ Завантаження Adresses із файлу
+const readDbAdresses = (): { adresses: Adresses[] } => {
   const data = fs.readFileSync(dbPathAdresses, "utf-8");
   return JSON.parse(data);
 };
 
-// 💾 Збереження Products у файл
-const writeDbPAdresses = (data: { adresses: Course[] }) => {
+// 💾 Збереження Adresses у файл
+const writeDbPAdresses = (data: { adresses: Adresses[] }) => {
   fs.writeFileSync(dbPathAdresses, JSON.stringify(data, null, 2));
 };
 
@@ -188,17 +193,70 @@ const writeDbPAdresses = (data: { adresses: Course[] }) => {
 //   {value: 'strit 11'}
 // ]
 
-app.get('/products', (req: Request, res: Response)=>{
-  const ProductsDb = readDbProducts();
-   let foundProducts = ProductsDb.products
-  res.json(foundProducts)
-})
 
-app.get('/adresses', (req: Request, res: Response)=>{
-  const AdressesDb = readDbPAdresses();
-   let foundAdresses = AdressesDb.adresses
-  res.json(foundAdresses)
-})
+// Всі продукти
+// app.get("/products", (req: Request, res: Response) => {
+//   const ProductsDb = readDbProducts();
+//   let foundProducts = ProductsDb.products;
+//   res.json(foundProducts);
+// });
+
+app.get("/products", (req: Request, res: Response) => {
+  const ProductsDb = readDbProducts();
+  let foundProducts = ProductsDb.products;
+
+  if (req.query.title) {
+    foundProducts = foundProducts.filter((c) =>
+      c.title.toLowerCase().includes((req.query.title as string).toLowerCase())
+    );
+  }
+
+  res.json(foundProducts);
+});
+
+// app.get("/products/:productTitle", (req: Request, res: Response) => {
+//   const ProductsDb = readDbProducts();
+//   let foundProducts = ProductsDb.products;
+//   let foundProduct = foundProducts.find(
+//     (c) => c.title === req.params.productTitle
+//   );
+
+//   if (!foundProduct) {
+//     return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+//   }
+
+//   res.json(foundProduct);
+// });
+
+app.get("/products/:productId", (req: Request, res: Response) => {
+  const ProductsDb = readDbProducts();
+  let foundProducts = ProductsDb.products;
+  let foundProduct = foundProducts.find((c) => c.id === +req.params.productId);
+
+  if (!foundProduct) {
+    return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+  }
+
+  res.json(foundProduct);
+});
+
+app.get("/adresses", (req: Request, res: Response) => {
+  const AdressesDb = readDbAdresses();
+  let foundAdresses = AdressesDb.adresses;
+  res.json(foundAdresses);
+});
+
+app.get("/adresses/:id", (req: Request, res: Response) => {
+  const AdressesDb = readDbAdresses();
+  let foundAdresses = AdressesDb.adresses;
+  let foundAdress = foundAdresses.find((c) => c.id === +req.params.id);
+
+  if (!foundAdress) {
+    return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
+  }
+
+  res.json(foundAdress);
+});
 
 ///////////////////////////////////////////////////////////////////////////////////////
 app.listen(port, () => {
