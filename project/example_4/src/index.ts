@@ -201,6 +201,10 @@ const writeDbPAdresses = (data: { adresses: Adresses[] }) => {
 //   res.json(foundProducts);
 // });
 
+
+// ------------------------------------------ Products
+
+// Отримати всі продукти за умовою
 app.get("/products", (req: Request, res: Response) => {
   const ProductsDb = readDbProducts();
   let foundProducts = ProductsDb.products;
@@ -214,20 +218,7 @@ app.get("/products", (req: Request, res: Response) => {
   res.json(foundProducts);
 });
 
-// app.get("/products/:productTitle", (req: Request, res: Response) => {
-//   const ProductsDb = readDbProducts();
-//   let foundProducts = ProductsDb.products;
-//   let foundProduct = foundProducts.find(
-//     (c) => c.title === req.params.productTitle
-//   );
-
-//   if (!foundProduct) {
-//     return res.sendStatus(HTTP_STATUSES.NOT_FOUND_404);
-//   }
-
-//   res.json(foundProduct);
-// });
-
+// Отримати  продукт за
 app.get("/products/:productId", (req: Request, res: Response) => {
   const ProductsDb = readDbProducts();
   let foundProducts = ProductsDb.products;
@@ -240,12 +231,83 @@ app.get("/products/:productId", (req: Request, res: Response) => {
   res.json(foundProduct);
 });
 
+// ➕ Створити новий продукт
+app.post("/products", (req, res) => {
+  if (!req.body.title || req.body.title.trim() === "") {
+    return res
+      .status(HTTP_STATUSES.BAD_REQUEST_400)
+      .json({ error: "Title is required" });
+  }
+
+  const ProductsDb = readDbProducts();
+  const newProduct: Products = {
+    id: +new Date(),
+    title: req.body.title.trim(),
+  };
+
+  ProductsDb.products.push(newProduct);
+  writeDbProducts(ProductsDb);
+
+  res.status(HTTP_STATUSES.CREATED_201).json(newProduct);
+});
+
+// ❌ Видалити продукт за ID
+app.delete("/products/:id", (req, res) => {
+  const id = +req.params.id;
+  const ProductsDb = readDbProducts();
+
+  const index = ProductsDb.products.findIndex((c) => c.id === id);
+  if (index === -1) {
+    return res
+      .status(HTTP_STATUSES.NOT_FOUND_404)
+      .json({ error: "Product not found" });
+  }
+
+  ProductsDb.products.splice(index, 1);
+  writeDbProducts(ProductsDb);
+
+  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+});
+
+// 🔍 Змінити продукт
+app.put("/products/:id", (req, res) => {
+  if (!req.body.title || req.body.title.trim() === "") {
+    return res
+      .status(HTTP_STATUSES.BAD_REQUEST_400)
+      .json({ error: "Title is required" });
+  }
+
+  const ProductsDb = readDbProducts();
+  const foundProduct = ProductsDb.products.find((c) => c.id === +req.params.id);
+
+  if (!foundProduct) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  foundProduct.title = req.body.title;
+
+  writeDbProducts(ProductsDb);
+
+  return res.status(HTTP_STATUSES.OK_200).json(foundProduct);
+});
+
+
+// ------------------------------------------ Adresess
+// Отримати всі адреси за умовою
 app.get("/adresses", (req: Request, res: Response) => {
   const AdressesDb = readDbAdresses();
   let foundAdresses = AdressesDb.adresses;
+
+  if (req.query.value) {
+    foundAdresses = foundAdresses.filter((c) =>
+      c.value.toLowerCase().includes((req.query.value as string).toLowerCase())
+    );
+  }
+
   res.json(foundAdresses);
 });
 
+//  Отримати адресу за ID
 app.get("/adresses/:id", (req: Request, res: Response) => {
   const AdressesDb = readDbAdresses();
   let foundAdresses = AdressesDb.adresses;
@@ -256,6 +318,67 @@ app.get("/adresses/:id", (req: Request, res: Response) => {
   }
 
   res.json(foundAdress);
+});
+
+//  Створити нову адресу
+app.post("/adresses", (req, res) => {
+  if (!req.body.value || req.body.value.trim() === "") {
+    return res
+      .status(HTTP_STATUSES.BAD_REQUEST_400)
+      .json({ error: "Title is required" });
+  }
+
+  const AdressesDb = readDbAdresses();
+  const newAdress: Adresses = {
+    id: +new Date(),
+    value: req.body.value.trim(),
+  };
+
+  AdressesDb.adresses.push(newAdress);
+  writeDbPAdresses(AdressesDb);
+
+  res.status(HTTP_STATUSES.CREATED_201).json(newAdress);
+});
+
+//  Видалити адресу за ID
+app.delete("/adresses/:id", (req, res) => {
+  const id = +req.params.id;
+  const AdressesDb = readDbAdresses();
+
+  const index = AdressesDb.adresses.findIndex((c) => c.id === id);
+  if (index === -1) {
+    return res
+      .status(HTTP_STATUSES.NOT_FOUND_404)
+      .json({ error: "Adress not found" });
+  }
+
+  AdressesDb.adresses.splice(index, 1);
+  writeDbPAdresses(AdressesDb);
+
+  res.sendStatus(HTTP_STATUSES.NO_CONTENT_204);
+});
+
+// 🔍 Змінити адресу
+
+app.put("/adresses/:id", (req, res) => {
+  if (!req.body.value || req.body.value.trim() === "") {
+    return res
+      .status(HTTP_STATUSES.BAD_REQUEST_400)
+      .json({ error: "Title is required" });
+  }
+
+  const AdressesDb = readDbAdresses();
+  const foundAdress = AdressesDb.adresses.find((c) => c.id === +req.params.id);
+
+  if (!foundAdress) {
+    return res.status(404).json({ error: "Adress not found" });
+  }
+
+  foundAdress.value = req.body.value;
+
+  writeDbPAdresses(AdressesDb);
+
+  return res.status(HTTP_STATUSES.OK_200).json(foundAdress);
 });
 
 ///////////////////////////////////////////////////////////////////////////////////////

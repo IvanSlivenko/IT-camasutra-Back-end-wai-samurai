@@ -5,6 +5,7 @@
     <title>Test Fetch</title>
   </head>
   <body>
+    <h3>Courses</h3>
     <!-- Пошук всіх курсів -->
     <button onclick="getAllCourses()">Пошук всіх</button>
     <script>
@@ -122,7 +123,6 @@
     </script> -->
 
     <!-- Створення з body    var 2-->
-
     <div>
       <input
         type="text"
@@ -270,6 +270,7 @@
 
     <h2>Lesson 12</h2>
 
+    <h3>Products</h3>
     <!-- Пошук всіх products   -->
     <button onclick="getAllProducts()">Пошук всіх products</button>
     <script>
@@ -284,7 +285,9 @@
     <!-- Пошук одного  product за фрагментом -->
     <div>
       <input type="text" id="productTitleInput" placeholder="Введіть назву" />
-      <button onclick="getOunProduct()">Пошук одного продукту</button>
+      <button onclick="getOunProduct()">
+        Пошук одного продукту за фрагментом назви
+      </button>
     </div>
     <script>
       function getOunProduct() {
@@ -294,10 +297,12 @@
           return;
         }
 
-        fetch(`http://localhost:3000/products/?title=${encodeURIComponent(
+        fetch(
+          `http://localhost:3000/products/?title=${encodeURIComponent(
             foundTitle
-          )}`, { method: "GET" })
-        
+          )}`,
+          { method: "GET" }
+        )
           .then((res) => res.json())
           .then((json) => {
             console.log("Знайдено продукт:", json);
@@ -307,7 +312,7 @@
       }
     </script>
 
-      <!-- Пошук одного  product by id -->
+    <!-- Пошук одного  product by id -->
     <div>
       <input type="number" id="productIdInput" placeholder="Введіть Id" />
       <button onclick="getOunProductById()">Пошук одного продукту за Id</button>
@@ -320,7 +325,9 @@
           return;
         }
 
-        fetch(`http://localhost:3000/products/${foundProductId}`, { method: "GET" })
+        fetch(`http://localhost:3000/products/${foundProductId}`, {
+          method: "GET",
+        })
           .then((res) => res.json())
           .then((json) => {
             console.log("Знайдено продукт:", json);
@@ -329,6 +336,159 @@
           .catch((err) => console.error("Fetch error:", err));
       }
     </script>
+
+    <!-- Створення product з body    var 2-->
+
+    <div>
+      <input
+        type="text"
+        id="CreateProductTitleInput"
+        placeholder="Введіть назву нового продукту"
+      />
+      <button onclick="CreateOunProduct()">
+        Створення одного продукту за назвою
+      </button>
+    </div>
+    <script>
+      function CreateOunProduct() {
+        let currentTitleProduct = document.getElementById(
+          "CreateProductTitleInput"
+        ).value;
+
+        if (currentTitleProduct.trim() === "") {
+          throw new Error("Title is required (400)");
+        }
+
+        fetch("http://localhost:3000/products", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: currentTitleProduct }),
+        })
+          .then(async (res) => {
+            // console.log('Status:', res.status);
+            const data = await res.json().catch(() => ({}));
+            if (res.status >= 400) {
+              console.warn("Server error response:", data);
+            } else {
+              console.log("Success:", data);
+              document.getElementById("CreateProductTitleInput").value = ""; // Очистити input
+            }
+          })
+          .catch((err) => console.error("Fetch error:", err));
+      }
+    </script>
+
+    <!-- Видалення одного  products-->
+    <div>
+      <input
+        type="number"
+        id="productIdInputDelete"
+        placeholder="Введіть ID продукту для видалення"
+      />
+      <button onclick="deleteProductById()">Видалити продукт</button>
+    </div>
+    <script>
+      function deleteProductById() {
+        const DeletedId = document
+          .getElementById("productIdInputDelete")
+          .value.trim();
+
+        if (!DeletedId || isNaN(DeletedId)) {
+          alert("Введіть коректний ID продукту");
+          return;
+        }
+
+        fetch(`http://localhost:3000/products/${DeletedId}`)
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(`Продукт з id=${DeletedId} не знайдено`);
+            }
+            return res.json();
+          })
+          .then((json) => {
+            const foundId = json.id;
+            console.log("Знайдено продукт:", json);
+
+            return fetch(`http://localhost:3000/products/${foundId}`, {
+              method: "DELETE",
+            });
+          })
+          .then((res) => {
+            if (res.status === 204) {
+              console.log("✅ Продукт успішно видалено.");
+              document.getElementById("productIdInputDelete").value = ""; // Очистити input
+            } else {
+              return res.text().then((text) => {
+                console.warn("⚠️ Відповідь сервера:", text);
+              });
+            }
+          })
+          .catch((err) => {
+            console.error("❌ Помилка:", err.message);
+          });
+      }
+    </script>
+
+        <!-- Зміна одного  products-->
+    <div>
+      <input
+        type="number"
+        id="productIdInputUpdate"
+        placeholder="Введіть ID продукту для зміни"
+      />
+      <input
+        type="text"
+        id="productTitleInputUpdate"
+        placeholder="Введіть нову назву продукту для зміни"
+      />
+      <button onclick="updateProductById()">Змінити продукт</button>
+    </div>
+    <script>
+      function updateProductById() {
+        const inputTitle = document.getElementById("productTitleInputUpdate");
+        const inputId = document.getElementById("productIdInputUpdate");
+
+        const currentTitleUpdatet = inputTitle.value.trim();
+        const UpdateId = inputId.value.trim();
+
+        if (currentTitleUpdatet === "") {
+          alert("Поле назви не може бути порожнім");
+          return;
+        }
+
+        if (!UpdateId || isNaN(UpdateId)) {
+          alert("Введіть коректний ID продукту");
+          return;
+        }
+
+        fetch(`http://localhost:3000/products/${UpdateId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ title: currentTitleUpdatet }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(`Продукт з id=${UpdateId} не знайдено`);
+            }
+            return res.json();
+          })
+          .then((json) => {
+            console.log("✅ Продукт успішно змінено:", json);
+            // Очистити поля
+            inputTitle.value = "";
+            inputId.value = "";
+          })
+          .catch((err) => {
+            console.error("❌ Помилка:", err.message);
+          });
+      }
+    </script>
+
+    <h3>Adresses</h3>
 
     <!-- Пошук всіх adresses   -->
     <button onclick="getAllAdresses()">Пошук всіх adresses</button>
@@ -341,20 +501,22 @@
       }
     </script>
 
-      <!-- Пошук одного  adress -->
+    <!-- Пошук одного  adress by id -->
     <div>
       <input type="number" id="adresIDInput" placeholder="Введіть Id" />
-      <button onclick="getOunAdrerss()">Пошук одної адреси</button>
+      <button onclick="getOunAdrerssById()">Пошук одної адреси за Id</button>
     </div>
     <script>
-      function getOunAdrerss() {
+      function getOunAdrerssById() {
         const foundAdressId = document.getElementById("adresIDInput").value;
         if (!foundAdressId || foundAdressId.trim() === "") {
           alert("Введіть коректну id адреси");
           return;
         }
 
-        fetch(`http://localhost:3000/adresses/${foundAdressId}`, { method: "GET" })
+        fetch(`http://localhost:3000/adresses/${foundAdressId}`, {
+          method: "GET",
+        })
           .then((res) => res.json())
           .then((json) => {
             console.log("Знайдено адресу:", json);
@@ -363,5 +525,188 @@
           .catch((err) => console.error("Fetch error:", err));
       }
     </script>
+
+        <!-- Пошук одного  adress за фрагментом -->
+    <div>
+      <input type="text" id="adressTitleInput" placeholder="Введіть назву" />
+      <button onclick="getOunAdress()">
+        Пошук одної адреси за фрагментом назви
+      </button>
+    </div>
+    <script>
+      function getOunAdress() {
+        const foundTitleAdress = document.getElementById("adressTitleInput").value;
+        if (!foundTitleAdress || foundTitleAdress.trim() === "") {
+          alert("Введіть коректну назву адреси");
+          return;
+        }
+
+        fetch(
+          `http://localhost:3000/adresses/?value=${encodeURIComponent(
+            foundTitleAdress
+          )}`,
+          { method: "GET" }
+        )
+          .then((res) => res.json())
+          .then((json) => {
+            console.log("Знайдено адресу:", json);
+            document.getElementById("adressTitleInput").value = "";
+          })
+          .catch((err) => console.error("Fetch error:", err));
+      }
+    </script>
+
+        <!-- Створення adress з body    var 2-->
+    <div>
+      <input
+        type="text"
+        id="CreateAdressTitleInput"
+        placeholder="Введіть назву нової адреси"
+      />
+      <button onclick="CreateOunAdress()">
+        Створення одної адреси за назвою
+      </button>
+    </div>
+    <script>
+      function CreateOunAdress() {
+        let currentTitleAdress = document.getElementById(
+          "CreateAdressTitleInput"
+        ).value;
+
+        if (currentTitleAdress.trim() === "") {
+          throw new Error("Title is required (400)");
+        }
+
+        fetch("http://localhost:3000/adresses", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ value: currentTitleAdress }),
+        })
+          .then(async (res) => {
+            // console.log('Status:', res.status);
+            const data = await res.json().catch(() => ({}));
+            if (res.status >= 400) {
+              console.warn("Server error response:", data);
+            } else {
+              console.log("Success:", data);
+              document.getElementById("CreateAdressTitleInput").value = ""; // Очистити input
+            }
+          })
+          .catch((err) => console.error("Fetch error:", err));
+      }
+    </script>
+
+        <!-- Видалення одного  adress-->
+    <div>
+      <input
+        type="number"
+        id="adressIdInputDelete"
+        placeholder="Введіть ID адреси для видалення"
+      />
+      <button onclick="deleteAdressById()">Видалити адресу</button>
+    </div>
+    <script>
+      function deleteAdressById() {
+        const DeletedId = document
+          .getElementById("adressIdInputDelete")
+          .value.trim();
+
+        if (!DeletedId || isNaN(DeletedId)) {
+          alert("Введіть коректний ID адреси");
+          return;
+        }
+
+        fetch(`http://localhost:3000/adresses/${DeletedId}`)
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(`Адресу з id=${DeletedId} не знайдено`);
+            }
+            return res.json();
+          })
+          .then((json) => {
+            const foundId = json.id;
+            console.log("Знайдено адресу:", json);
+
+            return fetch(`http://localhost:3000/adresses/${foundId}`, {
+              method: "DELETE",
+            });
+          })
+          .then((res) => {
+            if (res.status === 204) {
+              console.log("✅ Адресу успішно видалено.");
+              document.getElementById("adressIdInputDelete").value = ""; // Очистити input
+            } else {
+              return res.text().then((text) => {
+                console.warn("⚠️ Відповідь сервера:", text);
+              });
+            }
+          })
+          .catch((err) => {
+            console.error("❌ Помилка:", err.message);
+          });
+      }
+    </script>
+
+            <!-- Зміна одного  adress-->
+    <div>
+      <input
+        type="number"
+        id="adressIdInputUpdate"
+        placeholder="Введіть ID продукту для зміни"
+      />
+      <input
+        type="text"
+        id="adressTitleInputUpdate"
+        placeholder="Введіть нову назву продукту для зміни"
+      />
+      <button onclick="updateProductById()">Змінити адресу</button>
+    </div>
+    <script>
+      function updateProductById() {
+        const inputTitle = document.getElementById("adressTitleInputUpdate");
+        const inputId = document.getElementById("adressIdInputUpdate");
+
+        const currentTitleUpdatet = inputTitle.value.trim();
+        const UpdateId = inputId.value.trim();
+
+        if (currentTitleUpdatet === "") {
+          alert("Поле назви не може бути порожнім");
+          return;
+        }
+
+        if (!UpdateId || isNaN(UpdateId)) {
+          alert("Введіть коректний ID продукту");
+          return;
+        }
+
+        fetch(`http://localhost:3000/adresses/${UpdateId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({value: currentTitleUpdatet }),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error(`Адресу з id=${UpdateId} не знайдено`);
+            }
+            return res.json();
+          })
+          .then((json) => {
+            console.log("✅ Адресу успішно змінено:", json);
+            // Очистити поля
+            inputTitle.value = "";
+            inputId.value = "";
+          })
+          .catch((err) => {
+            console.error("❌ Помилка:", err.message);
+          });
+      }
+    </script>
+
+
+
   </body>
 </html>
